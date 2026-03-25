@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRM System — ROI Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy:   #1B3A5C;
+    --blue:   #2A6099;
+    --sky:    #EAF2FB;
+    --green:  #1A7F5A;
+    --green-bg: #E8F7F2;
+    --amber:  #B85C00;
+    --amber-bg: #FFF3E6;
+    --text:   #1A1A2E;
+    --muted:  #6B7280;
+    --border: #D1DCE8;
+    --white:  #FFFFFF;
+    --page:   #F4F7FB;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--page);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 40px 20px 80px;
+  }
+
+  .container {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .header-badge {
+    display: inline-block;
+    background: var(--navy);
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+  .header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(28px, 5vw, 42px);
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 14px;
+  }
+  .header p {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.6;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 12px rgba(27,58,92,0.06);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .lever-number {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .card-header-text h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: var(--navy);
+    line-height: 1.2;
+  }
+  .card-header-text p {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 3px;
+    line-height: 1.4;
+  }
+
+  /* INPUTS */
+  .fields {
+    display: grid;
+    gap: 16px;
+  }
+  .field {
+    display: grid;
+    grid-template-columns: 1fr 140px;
+    align-items: center;
+    gap: 16px;
+  }
+  .field label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.4;
+  }
+  .field label span {
+    display: block;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .input-wrap {
+    position: relative;
+  }
+  .input-wrap .prefix {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 500;
+    pointer-events: none;
+  }
+  .input-wrap .suffix {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 13px;
+    pointer-events: none;
+  }
+  input[type="number"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    background: var(--white);
+    transition: border-color 0.15s, box-shadow 0.15s;
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+  input[type="number"]:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(42,96,153,0.12);
+  }
+  .has-prefix input { padding-left: 28px; }
+  .has-suffix input { padding-right: 36px; }
+
+  /* RESULT ROW */
+  .result-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--sky);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-top: 20px;
+  }
+  .result-row .result-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--navy);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .result-row .result-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 24px;
+    color: var(--navy);
+  }
+
+  /* DIVIDER */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 8px 0;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* SUMMARY CARD */
+  .summary-card {
+    background: var(--navy);
+    border-radius: 16px;
+    padding: 32px;
+    color: white;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 32px rgba(27,58,92,0.25);
+  }
+  .summary-card h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    margin-bottom: 24px;
+    opacity: 0.95;
+  }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .summary-item {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .summary-item .si-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.6;
+    margin-bottom: 6px;
+  }
+  .summary-item .si-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    line-height: 1;
+  }
+  .summary-item .si-sub {
+    font-size: 12px;
+    opacity: 0.55;
+    margin-top: 4px;
+  }
+
+  .summary-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.12);
+    margin: 0 0 20px;
+  }
+
+  .payback-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+  }
+  .payback-row .pr-label {
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0.85;
+  }
+  .payback-row .pr-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+  }
+
+  .verdict {
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 14px;
+    line-height: 1.5;
+    font-weight: 500;
+  }
+  .verdict.good { background: rgba(26,127,90,0.25); border: 1px solid rgba(26,127,90,0.35); }
+  .verdict.ok   { background: rgba(184,92,0,0.25);  border: 1px solid rgba(184,92,0,0.35); }
+
+  /* COSTS CARD */
+  .costs-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 20px;
+  }
+  .costs-card h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+  .cost-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+  .cost-row:last-child { border-bottom: none; }
+  .cost-row .cr-label { color: var(--muted); }
+  .cost-row .cr-value { font-weight: 600; color: var(--text); }
+
+  /* FOOTNOTE */
+  .footnote {
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+    padding: 0 20px;
+  }
+
+  @media (max-width: 520px) {
+    .card { padding: 20px; }
+    .field { grid-template-columns: 1fr; gap: 8px; }
+    .summary-grid { grid-template-columns: 1fr; }
+    .summary-card { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="header-badge">ROI Estimator</div>
+    <h1>What could a CRM system<br>be worth to your business?</h1>
+    <p>Enter your own numbers below. The calculator works out the monthly value and how quickly the system pays for itself.</p>
+  </div>
+
+  <!-- LEVER 1 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="lever-number">1</div>
+      <div class="card-header-text">
+        <h2>Converting more quotes</h2>
+        <p>Structured follow-up means fewer quotes going cold. Even a small improvement at flooring AOVs adds up fast.</p>
+      </div>
+    </div>
+    <div class="fields">
+      <div class="field">
+        <label>Quotes sent per month</label>
+        <div class="input-wrap">
+          <input type="number" id="quotes" value="20" min="0" oninput="calc()">
+        </div>
+      </div>
+      <div class="field">
+        <label>Current close rate<span>% of quotes that become jobs</span></label>
+        <div class="input-wrap has-suffix">
+          <input type="number" id="closeRate" value="50" min="0" max="100" oninput="calc()">
+          <span class="suffix">%</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Average order value</label>
+        <div class="input-wrap has-prefix">
+          <span class="prefix">£</span>
+          <input type="number" id="aov" value="900" min="0" oninput="calc()">
+        </div>
+      </div>
+      <div class="field">
+        <label>Improvement in close rate assumed<span>Conservative: 5–10% is realistic</span></label>
+        <div class="input-wrap has-suffix">
+          <input type="number" id="improvement" value="10" min="0" max="50" oninput="calc()">
+          <span class="suffix">%</span>
+        </div>
+      </div>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Extra revenue / month</span>
+      <span class="result-value" id="lever1Result">£1,800</span>
+    </div>
+  </div>
+
+  <!-- LEVER 2 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="lever-number">2</div>
+      <div class="card-header-text">
+        <h2>Time saved on admin</h2>
+        <p>Paper orders, manual filing, re-entering information. Every hour recovered is an hour back on the tools or with customers.</p>
+      </div>
+    </div>
+    <div class="fields">
+      <div class="field">
+        <label>Admin hours saved per week<span>Filing, chasing orders, re-entering data</span></label>
+        <div class="input-wrap">
+          <input type="number" id="hours" value="5" min="0" oninput="calc()">
+        </div>
+      </div>
+      <div class="field">
+        <label>Value of that time<span>£ per hour — owner or admin rate</span></label>
+        <div class="input-wrap has-prefix">
+          <span class="prefix">£</span>
+          <input type="number" id="hourRate" value="25" min="0" oninput="calc()">
+        </div>
+      </div>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Time saving / month</span>
+      <span class="result-value" id="lever2Result">£541</span>
+    </div>
+  </div>
+
+  <!-- LEVER 3 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="lever-number">3</div>
+      <div class="card-header-text">
+        <h2>Avoided costs</h2>
+        <p>Return visits, missed supplier orders, jobs delayed by lost paperwork. Getting things right first time has a direct cost saving.</p>
+      </div>
+    </div>
+    <div class="fields">
+      <div class="field">
+        <label>Return / remedial visits avoided per month</label>
+        <div class="input-wrap">
+          <input type="number" id="visits" value="2" min="0" oninput="calc()">
+        </div>
+      </div>
+      <div class="field">
+        <label>Cost per remedial visit<span>Labour and travel</span></label>
+        <div class="input-wrap has-prefix">
+          <span class="prefix">£</span>
+          <input type="number" id="visitCost" value="150" min="0" oninput="calc()">
+        </div>
+      </div>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Avoided costs / month</span>
+      <span class="result-value" id="lever3Result">£300</span>
+    </div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="summary-card">
+    <h2>Your estimated return</h2>
+    <div class="summary-grid">
+      <div class="summary-item">
+        <div class="si-label">Extra revenue</div>
+        <div class="si-value" id="s1">£1,800</div>
+        <div class="si-sub">per month</div>
+      </div>
+      <div class="summary-item">
+        <div class="si-label">Time recovered</div>
+        <div class="si-value" id="s2">£541</div>
+        <div class="si-sub">per month</div>
+      </div>
+      <div class="summary-item">
+        <div class="si-label">Costs avoided</div>
+        <div class="si-value" id="s3">£300</div>
+        <div class="si-sub">per month</div>
+      </div>
+      <div class="summary-item">
+        <div class="si-label">Total monthly value</div>
+        <div class="si-value" id="totalMonthly">£2,641</div>
+        <div class="si-sub">vs ~£45–60 platform cost</div>
+      </div>
+    </div>
+
+    <div class="summary-divider"></div>
+
+    <div class="payback-row">
+      <span class="pr-label">Build cost (£4,200) paid back in</span>
+      <span class="pr-value" id="payback">1.6 months</span>
+    </div>
+
+    <div class="verdict good" id="verdict">
+      Based on your figures, the system pays for itself in under 2 months — and generates ongoing value every month after that.
+    </div>
+  </div>
+
+  <!-- PLATFORM COSTS FOR REFERENCE -->
+  <div class="costs-card">
+    <h2>Platform cost for reference</h2>
+    <div class="cost-row">
+      <span class="cr-label">Airtable Team — 3 users, annual billing</span>
+      <span class="cr-value">~£45 / month</span>
+    </div>
+    <div class="cost-row">
+      <span class="cr-label">Airtable Team — 4 users, annual billing</span>
+      <span class="cr-value">~£60 / month</span>
+    </div>
+    <div class="cost-row">
+      <span class="cr-label">One-off build cost</span>
+      <span class="cr-value">£4,200</span>
+    </div>
+  </div>
+
+  <p class="footnote">
+    These figures are estimates based on the inputs above. They are intentionally conservative — real-world results will depend on how well the system is adopted and how consistently the team uses it. The point isn't precision; it's to establish that a well-run system pays for itself quickly and keeps paying from there.
+  </p>
+
+</div>
+
+<script>
+  function fmt(n) {
+    if (isNaN(n) || !isFinite(n)) return '—';
+    return '£' + Math.round(n).toLocaleString('en-GB');
+  }
+
+  function calc() {
+    const quotes      = parseFloat(document.getElementById('quotes').value)      || 0;
+    const closeRate   = parseFloat(document.getElementById('closeRate').value)   || 0;
+    const aov         = parseFloat(document.getElementById('aov').value)         || 0;
+    const improvement = parseFloat(document.getElementById('improvement').value) || 0;
+    const hours       = parseFloat(document.getElementById('hours').value)       || 0;
+    const hourRate    = parseFloat(document.getElementById('hourRate').value)    || 0;
+    const visits      = parseFloat(document.getElementById('visits').value)      || 0;
+    const visitCost   = parseFloat(document.getElementById('visitCost').value)   || 0;
+
+    // Lever 1: extra jobs per month x AOV
+    // current jobs = quotes * (closeRate/100)
+    // improved jobs = quotes * ((closeRate + improvement)/100)
+    // extra jobs = quotes * (improvement/100)
+    const lever1 = quotes * (improvement / 100) * aov;
+
+    // Lever 2: hours/week * 4.33 weeks * rate
+    const lever2 = hours * 4.33 * hourRate;
+
+    // Lever 3: visits * cost
+    const lever3 = visits * visitCost;
+
+    const total = lever1 + lever2 + lever3;
+    const buildCost = 4200;
+    const paybackMonths = total > 0 ? buildCost / total : null;
+
+    document.getElementById('lever1Result').textContent = fmt(lever1);
+    document.getElementById('lever2Result').textContent = fmt(lever2);
+    document.getElementById('lever3Result').textContent = fmt(lever3);
+
+    document.getElementById('s1').textContent = fmt(lever1);
+    document.getElementById('s2').textContent = fmt(lever2);
+    document.getElementById('s3').textContent = fmt(lever3);
+    document.getElementById('totalMonthly').textContent = fmt(total);
+
+    // Payback
+    const pbEl = document.getElementById('payback');
+    if (paybackMonths === null || total === 0) {
+      pbEl.textContent = '—';
+    } else if (paybackMonths < 1) {
+      pbEl.textContent = 'Under 1 month';
+    } else {
+      pbEl.textContent = paybackMonths.toFixed(1) + ' months';
+    }
+
+    // Verdict
+    const vEl = document.getElementById('verdict');
+    if (total === 0) {
+      vEl.className = 'verdict ok';
+      vEl.textContent = 'Enter your figures above to see your estimated return.';
+    } else if (paybackMonths !== null && paybackMonths <= 3) {
+      vEl.className = 'verdict good';
+      vEl.textContent = `Based on your figures, the system pays for itself in ${paybackMonths.toFixed(1)} months — and generates ${fmt(total)} of value every month after that.`;
+    } else if (paybackMonths !== null && paybackMonths <= 6) {
+      vEl.className = 'verdict ok';
+      vEl.textContent = `Based on your figures, the build cost is recovered in around ${paybackMonths.toFixed(1)} months, with ${fmt(total)} monthly value from there.`;
+    } else {
+      vEl.className = 'verdict ok';
+      vEl.textContent = `Based on your figures, payback takes ${paybackMonths !== null ? paybackMonths.toFixed(1) + ' months' : 'a while'} — worth reviewing the input assumptions to see if they reflect the full picture.`;
+    }
+  }
+
+  calc();
+</script>
+</body>
+</html>
