@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CRM System — ROI Calculator</title>
+<title>Operations System — ROI Calculator</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -356,7 +356,7 @@
 
   <div class="header">
     <div class="header-badge">ROI Estimator</div>
-    <h1>What could a CRM system<br>be worth to your business?</h1>
+    <h1>What could an operations system<br>be worth to your business?</h1>
     <p>Enter your own numbers below. The calculator works out the monthly value and how quickly the system pays for itself.</p>
   </div>
 
@@ -410,7 +410,7 @@
       <div class="lever-number">2</div>
       <div class="card-header-text">
         <h2>Time saved on admin</h2>
-        <p>Paper orders, manual filing, re-entering information. Every hour recovered is an hour back on the tools or with customers.</p>
+        <p>Paper orders, manual filing, re-entering information. Every hour recovered is an hour back with customers.</p>
       </div>
     </div>
     <div class="fields">
@@ -498,7 +498,7 @@
     </div>
 
     <div class="verdict good" id="verdict">
-      Based on your figures, the system pays for itself in under 2 months — and generates ongoing value every month after that.
+      Based on your figures, the system pays for itself in under 2 months - and generates ongoing value every month after that.
     </div>
   </div>
 
@@ -520,7 +520,7 @@
   </div>
 
   <p class="footnote">
-    These figures are estimates based on the inputs above. They are intentionally conservative — real-world results will depend on how well the system is adopted and how consistently the team uses it. The point isn't precision; it's to establish that a well-run system pays for itself quickly and keeps paying from there.
+    These figures are estimates based on the inputs above. They are intentionally conservative - real-world results will depend on how well the system is adopted and how consistently the team uses it. The point isn't precision; it's to establish that a well-run system pays for itself quickly and keeps paying from there.
   </p>
 
 </div>
@@ -583,13 +583,13 @@
       vEl.textContent = 'Enter your figures above to see your estimated return.';
     } else if (paybackMonths !== null && paybackMonths <= 3) {
       vEl.className = 'verdict good';
-      vEl.textContent = `Based on your figures, the system pays for itself in ${paybackMonths.toFixed(1)} months — and generates ${fmt(total)} of value every month after that.`;
+      vEl.textContent = `Based on your figures, the system pays for itself in ${paybackMonths.toFixed(1)} months - and generates ${fmt(total)} of value every month after that.`;
     } else if (paybackMonths !== null && paybackMonths <= 6) {
       vEl.className = 'verdict ok';
       vEl.textContent = `Based on your figures, the build cost is recovered in around ${paybackMonths.toFixed(1)} months, with ${fmt(total)} monthly value from there.`;
     } else {
       vEl.className = 'verdict ok';
-      vEl.textContent = `Based on your figures, payback takes ${paybackMonths !== null ? paybackMonths.toFixed(1) + ' months' : 'a while'} — worth reviewing the input assumptions to see if they reflect the full picture.`;
+      vEl.textContent = `Based on your figures, payback takes ${paybackMonths !== null ? paybackMonths.toFixed(1) + ' months' : 'a while'} - worth reviewing the input assumptions to see if they reflect the full picture.`;
     }
   }
 
