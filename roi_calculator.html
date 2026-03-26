@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Operations System — ROI Calculator</title>
+<title>CRM System — ROI Calculator</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -356,7 +356,7 @@
 
   <div class="header">
     <div class="header-badge">ROI Estimator</div>
-    <h1>What could an operations system<br>be worth to your business?</h1>
+    <h1>What could a CRM system<br>be worth to your business?</h1>
     <p>Enter your own numbers below. The calculator works out the monthly value and how quickly the system pays for itself.</p>
   </div>
 
@@ -377,7 +377,7 @@
         </div>
       </div>
       <div class="field">
-        <label>Current close rate<span>% of quotes that become jobs</span></label>
+        <label>Current close rate<span>% of quotes that become jobs right now</span></label>
         <div class="input-wrap has-suffix">
           <input type="number" id="closeRate" value="50" min="0" max="100" oninput="calc()">
           <span class="suffix">%</span>
@@ -391,14 +391,28 @@
         </div>
       </div>
       <div class="field">
-        <label>Improvement in close rate assumed<span>Conservative: 5–10% is realistic</span></label>
+        <label>Improvement in close rate with the system<span>Conservative: 5-10% is realistic</span></label>
         <div class="input-wrap has-suffix">
           <input type="number" id="improvement" value="10" min="0" max="50" oninput="calc()">
           <span class="suffix">%</span>
         </div>
       </div>
     </div>
-    <div class="result-row">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px;">
+      <div style="background:var(--amber-bg);border:1px solid #f0c090;border-radius:10px;padding:14px 16px;">
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--amber);margin-bottom:6px;">Without system</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:2px;"><span id="currentJobs">10</span> jobs won / month</div>
+        <div style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--amber);" id="currentRevenue">£9,000</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px;">monthly revenue</div>
+      </div>
+      <div style="background:var(--green-bg);border:1px solid #90d4b8;border-radius:10px;padding:14px 16px;">
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--green);margin-bottom:6px;">With system</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:2px;"><span id="newJobs">12</span> jobs won / month</div>
+        <div style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--green);" id="newRevenue">£10,800</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px;">monthly revenue</div>
+      </div>
+    </div>
+    <div class="result-row" style="margin-top:12px;">
       <span class="result-label">Extra revenue / month</span>
       <span class="result-value" id="lever1Result">£1,800</span>
     </div>
@@ -410,7 +424,7 @@
       <div class="lever-number">2</div>
       <div class="card-header-text">
         <h2>Time saved on admin</h2>
-        <p>Paper orders, manual filing, re-entering information. Every hour recovered is an hour back with customers.</p>
+        <p>Paper orders, manual filing, re-entering information. Every hour recovered is an hour back on the tools or with customers.</p>
       </div>
     </div>
     <div class="fields">
@@ -498,7 +512,7 @@
     </div>
 
     <div class="verdict good" id="verdict">
-      Based on your figures, the system pays for itself in under 2 months - and generates ongoing value every month after that.
+      Based on your figures, the system pays for itself in under 2 months — and generates ongoing value every month after that.
     </div>
   </div>
 
@@ -520,7 +534,7 @@
   </div>
 
   <p class="footnote">
-    These figures are estimates based on the inputs above. They are intentionally conservative - real-world results will depend on how well the system is adopted and how consistently the team uses it. The point isn't precision; it's to establish that a well-run system pays for itself quickly and keeps paying from there.
+    These figures are estimates based on the inputs above. They are intentionally conservative — real-world results will depend on how well the system is adopted and how consistently the team uses it. The point isn't precision; it's to establish that a well-run system pays for itself quickly and keeps paying from there.
   </p>
 
 </div>
@@ -541,11 +555,18 @@
     const visits      = parseFloat(document.getElementById('visits').value)      || 0;
     const visitCost   = parseFloat(document.getElementById('visitCost').value)   || 0;
 
-    // Lever 1: extra jobs per month x AOV
-    // current jobs = quotes * (closeRate/100)
-    // improved jobs = quotes * ((closeRate + improvement)/100)
-    // extra jobs = quotes * (improvement/100)
-    const lever1 = quotes * (improvement / 100) * aov;
+    // Lever 1: correct maths
+    // Current jobs = quotes * (closeRate / 100)
+    // New close rate = closeRate + improvement (capped at 100)
+    // New jobs = quotes * (newCloseRate / 100)
+    // Extra jobs = new jobs - current jobs
+    const currentJobs = quotes * (closeRate / 100);
+    const newCloseRate = Math.min(closeRate + improvement, 100);
+    const newJobs = quotes * (newCloseRate / 100);
+    const extraJobs = newJobs - currentJobs;
+    const currentRevenue = currentJobs * aov;
+    const newRevenue = newJobs * aov;
+    const lever1 = extraJobs * aov;
 
     // Lever 2: hours/week * 4.33 weeks * rate
     const lever2 = hours * 4.33 * hourRate;
@@ -556,6 +577,12 @@
     const total = lever1 + lever2 + lever3;
     const buildCost = 4200;
     const paybackMonths = total > 0 ? buildCost / total : null;
+
+    // Update before/after
+    document.getElementById('currentJobs').textContent = Math.round(currentJobs * 10) / 10;
+    document.getElementById('newJobs').textContent = Math.round(newJobs * 10) / 10;
+    document.getElementById('currentRevenue').textContent = fmt(currentRevenue);
+    document.getElementById('newRevenue').textContent = fmt(newRevenue);
 
     document.getElementById('lever1Result').textContent = fmt(lever1);
     document.getElementById('lever2Result').textContent = fmt(lever2);
@@ -583,17 +610,19 @@
       vEl.textContent = 'Enter your figures above to see your estimated return.';
     } else if (paybackMonths !== null && paybackMonths <= 3) {
       vEl.className = 'verdict good';
-      vEl.textContent = `Based on your figures, the system pays for itself in ${paybackMonths.toFixed(1)} months - and generates ${fmt(total)} of value every month after that.`;
+      vEl.textContent = `Based on your figures, the system pays for itself in ${paybackMonths.toFixed(1)} months — and generates ${fmt(total)} of value every month after that.`;
     } else if (paybackMonths !== null && paybackMonths <= 6) {
       vEl.className = 'verdict ok';
       vEl.textContent = `Based on your figures, the build cost is recovered in around ${paybackMonths.toFixed(1)} months, with ${fmt(total)} monthly value from there.`;
     } else {
       vEl.className = 'verdict ok';
-      vEl.textContent = `Based on your figures, payback takes ${paybackMonths !== null ? paybackMonths.toFixed(1) + ' months' : 'a while'} - worth reviewing the input assumptions to see if they reflect the full picture.`;
+      vEl.textContent = `Based on your figures, payback takes ${paybackMonths !== null ? paybackMonths.toFixed(1) + ' months' : 'a while'} — worth reviewing the input assumptions to see if they reflect the full picture.`;
     }
   }
 
   calc();
 </script>
 </body>
+</html>
+
 </html>
